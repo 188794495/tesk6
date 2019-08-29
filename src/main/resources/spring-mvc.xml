@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <context:annotation-config/>
+    <!-- 扫描web相关的bean -->
+    <context:component-scan base-package="com.controller"/>
+
+    <!-- 开启SpringMVC注解模式 -->
+    <mvc:annotation-driven/>
+
+    <!-- 静态资源默认servlet配置 -->
+    <mvc:default-servlet-handler/>
+
+    <mvc:annotation-driven validator="validator" />
+    <!--    bean级别的校验 方法中的参数bean必须添加@Valid注解，后面紧跟着BindingResult result参数-->
+    <bean id="validator"
+          class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+        <property name="providerClass" value="org.hibernate.validator.HibernateValidator" />
+    </bean>
+    <!--    方法级别的校验  要校验的方法所在类必须添加@Validated注解-->
+    <bean
+            class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor">
+        <!-- 可以引用自己的 validator 配置，在本文中（下面）可以找到 validator 的参考配置，如果不指定则系统使用默认的 -->
+        <property name="validator" ref="validator" />
+    </bean>
+
+    <!-- tiles视图解释类 -->
+    <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+    </bean>
+
+    <!-- tiles配置路径 -->
+    <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+        <property name="definitions">
+            <list>
+                <value>/WEB-INF/tiles/titles.xml</value>
+            </list>
+        </property>
+    </bean>
+
+    <mvc:interceptors>
+        <!-- 配置登陆拦截器 -->
+        <mvc:interceptor>
+            <!--拦截后台页面的请求-->
+            <mvc:mapping path="/u/**"/>
+            <bean class="com.utils.LoginInterceptor"></bean>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!--&lt;!&ndash;配置一个视图解析器（配置jsp 显示ViewResolver） &ndash;&gt;-->
+    <!--<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+        <!--<property name="prefix" value="/WEB-INF/jsp/"/>-->
+        <!--<property name="suffix" value=".jsp"/>-->
+    <!--</bean>-->
+</beans>
+    <!--<bean id="propertyConfigurer"-->
+          <!--class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">-->
+        <!--&lt;!&ndash; 也可以将jdbc写成properties文件在此导入 &ndash;&gt;-->
+        <!--<property name="locations">-->
+            <!--<list>-->
+                <!--<value>classpath:memcached.properties</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--<bean-->
+            <!--class="org.springframework.web.servlet.view.InternalResourceViewResolver">-->
+        <!--<property name="viewClass"-->
+                  <!--value="org.springframework.web.servlet.view.JstlView"/>-->
+        <!--<property name="prefix" value="/WEB-INF/jsp/"/>-->
+        <!--<property name="suffix" value=".jsp"/>-->
+    <!--</bean>-->
+
+    <!--<mvc:annotation-driven />-->
+    <!--<mvc:resources mapping="/css/**" location="/statics/css/**" />-->
+    <!--<mvc:resources mapping="/img/**" location="/statics/images/**" />-->
+    <!--<mvc:resources mapping="/js/**" location="/statics/js/**" />-->
+
+
